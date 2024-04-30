@@ -13,12 +13,17 @@ body {
 #tab-list li {
     padding: 8px;
     margin-bottom: 5px;
-    background-color: #f0f0f0;
     cursor: pointer;
 }
 
 /* Highlight style for the selected tab */
 .selected {
-    /*background-color: #0078d7;*/
     color: blue;
+}
+
+.window-header {
+    font-weight: bold; /* Make the header text bold */
+    padding: 10px 5px; /* Add some padding for better spacing */
+    background-color: #f4f4f4; /* Light background for distinction */
+    border-bottom: 1px solid #ccc; /* Add a subtle line under the header */
 }

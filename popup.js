@@ -78,7 +78,6 @@ function selectTab(index) {
     // Add 'selected' class to the new active item
     const selectedItem = document.getElementById('tab' + index);
     selectedItem.classList.add('selected');
-    selectedItem.scrollIntoView({ behavior: "smooth", block: "nearest" });
     selectedIndex = index;
     console.log("Selecting tab " + index);
 }
