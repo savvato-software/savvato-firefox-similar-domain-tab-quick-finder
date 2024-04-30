@@ -17,6 +17,10 @@ function displayTabs(tabs) {
         const item = document.createElement('li');
         item.textContent = tab.title;
         item.id = 'tab' + index;
+        item.addEventListener('click', () => {
+            selectTab(index);  // Select tab on click
+            activateTab(index); // Optionally activate tab on click
+        });
         list.appendChild(item);
     });
 
@@ -67,6 +71,13 @@ function selectTab(index) {
     selectedItem.classList.add('selected');
     selectedIndex = index;
     console.log("Selecting tab " + index);
+}
+
+function activateTab(index) {
+    console.log("Activating tab: " + index);
+    browser.tabs.update(listOfTabs[index].id, {active: true}).then(() => {
+        window.close();  // Close the popup after activating the tab
+    }, onError);
 }
 
 // Listen for cycle command
