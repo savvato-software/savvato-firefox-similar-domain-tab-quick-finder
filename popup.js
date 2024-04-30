@@ -13,13 +13,22 @@ function displayTabs(tabs) {
     listOfTabs = tabs.tabs;
 
     const list = document.getElementById('tab-list');
+    let lastWindowId = null;
     listOfTabs.forEach((tab, index) => {
+        if (lastWindowId !== tab.windowId) {
+            // If the window ID changes, insert a divider or header
+            const header = document.createElement('li');
+            header.textContent = `Window ${tab.windowId}`;
+            header.classList.add('window-header');
+            list.appendChild(header);
+            lastWindowId = tab.windowId;
+        }
         const item = document.createElement('li');
         item.textContent = tab.title;
         item.id = 'tab' + index;
         item.addEventListener('click', () => {
-            selectTab(index);  // Select tab on click
-            activateTab(index); // Optionally activate tab on click
+            selectTab(tab.index); // Pass index or ID for selection
+            activateTab(tab.index);
         });
         list.appendChild(item);
     });

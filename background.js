@@ -15,16 +15,39 @@ function handleCommand(command) {
   }
 }
 
-// Function to update tabs and open popup if not already open
 function updateTabs() {
-  browser.tabs.query({currentWindow: true, active: true}).then(activeTabs => {
-    let activeTab = activeTabs[0];
-    browser.tabs.query({currentWindow: true}).then(allTabs => {
-      sameDomainTabs = allTabs.filter(tab => new URL(tab.url).hostname === new URL(activeTab.url).hostname);
-      isTabsQueried = true; // Set flag after querying tabs
-      if (!popupWindowId && sameDomainTabs.length > 0) {
-        openPopup();
-      }
+  // Get the current window and active tab to determine the domain to filter by
+  browser.windows.getCurrent({populate: true}).then(currentWindow => {
+    browser.tabs.query({active: true, windowId: currentWindow.id}).then(activeTabs => {
+      let activeTab = activeTabs[0];
+      let activeDomain = new URL(activeTab.url).hostname;
+
+      // Now fetch all tabs from all windows
+      browser.tabs.query({}).then(allTabs => {
+        let currentWindowTabs = [];
+        let otherWindowsTabs = {};
+
+        // Filter tabs by the same domain and group by window ID
+        allTabs.forEach(tab => {
+          if (new URL(tab.url).hostname === activeDomain) {
+            if (tab.windowId === currentWindow.id) {
+              currentWindowTabs.push(tab);
+            } else {
+              if (!otherWindowsTabs[tab.windowId]) {
+                otherWindowsTabs[tab.windowId] = [];
+              }
+              otherWindowsTabs[tab.windowId].push(tab);
+            }
+          }
+        });
+
+        // Combine tabs into a single list with current window tabs first
+        sameDomainTabs = currentWindowTabs.concat(...Object.values(otherWindowsTabs));
+        isTabsQueried = true; // Set flag after querying tabs
+        if (!popupWindowId && sameDomainTabs.length > 0) {
+          openPopup();
+        }
+      });
     });
   });
 }
