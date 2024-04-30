@@ -1,4 +1,5 @@
 let selectedIndex = 0;
+let listOfTabs   = [];
 
 // Setup initial display of tabs
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,6 +17,9 @@ function displayTabs(tabs) {
         item.id = 'tab' + index;
         list.appendChild(item);
     });
+
+    listOfTabs = tabs.tabs;
+
     selectTab(0);  // Start with the first tab selected
 }
 
@@ -33,6 +37,23 @@ function selectTab(index) {
     console.log("Selecting tab " + index);
 }
 
+// Listen for key presses within the popup
+document.addEventListener('keydown', (event) => {
+    if (event.key === "Enter") {
+        console.log("Enter key pressed. Activating selected tab and closing popup.");
+
+        // Activate the selected tab
+        browser.tabs.update(listOfTabs[selectedIndex].id, {active: true}).then(() => {
+            // Close the popup window after activating the tab
+            window.close();
+        }, onError);
+    }
+});
+
+// Error handling function
+function onError(error) {
+    console.log(`Error: ${error}`);
+}
 
 // Listen for cycle command
 browser.runtime.onMessage.addListener((message) => {
