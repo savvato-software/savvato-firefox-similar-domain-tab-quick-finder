@@ -21,15 +21,18 @@ function displayTabs(tabs) {
 
 // Select tab in the list
 function selectTab(index) {
-    const previouslySelected = document.querySelector('.selected');
-    if (previouslySelected) {
-        previouslySelected.classList.remove('selected');
-    }
+    // Remove 'selected' class from all items
+    document.querySelectorAll('#tab-list li').forEach(item => {
+        item.classList.remove('selected');
+    });
+
+    // Add 'selected' class to the new active item
     const selectedItem = document.getElementById('tab' + index);
     selectedItem.classList.add('selected');
     selectedIndex = index;
-    console.log("Selected tab " + index);
+    console.log("Selecting tab " + index);
 }
+
 
 // Listen for cycle command
 browser.runtime.onMessage.addListener((message) => {

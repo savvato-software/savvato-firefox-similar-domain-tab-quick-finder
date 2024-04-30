@@ -1,0 +1,24 @@
+/* Basic styles for the popup */
+body {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+}
+
+/* Styles for the list of tabs */
+#tab-list {
+    list-style: none;
+    padding: 0;
+}
+
+#tab-list li {
+    padding: 8px;
+    margin-bottom: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+/* Highlight style for the selected tab */
+.selected {
+    /*background-color: #0078d7;*/
+    color: blue;
+}
