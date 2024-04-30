@@ -41,11 +41,7 @@ document.addEventListener('keydown', (event) => {
 
     if (event.key === "Enter") {
         console.log("Enter key pressed. Activating selected tab and closing popup.");
-        // Activate the selected tab
-        browser.tabs.update(listOfTabs[selectedIndex].id, {active: true}).then(() => {
-            // Close the popup window after activating the tab
-            window.close();
-        }, onError);
+        activateTab(selectedIndex);
     } else if (event.key === "ArrowDown" || event.key === "ArrowRight") {
         console.log("Arrow Down/Right key pressed. Moving to next tab.");
         // Move selection down
@@ -83,11 +79,19 @@ function selectTab(index) {
 }
 
 function activateTab(index) {
-    console.log("Activating tab: " + index);
-    browser.tabs.update(listOfTabs[index].id, {active: true}).then(() => {
-        window.close();  // Close the popup after activating the tab
+    const tab = listOfTabs[index];
+    console.log("Activating tab: " + index + " in window: " + tab.windowId);
+
+    // First, activate the tab
+    browser.tabs.update(tab.id, { active: true }).then(() => {
+        // Then, focus the window of the tab
+        browser.windows.update(tab.windowId, { focused: true }).then(() => {
+            console.log("Window " + tab.windowId + " focused.");
+            window.close();  // Optionally close the popup after activating the tab
+        }, onError);
     }, onError);
 }
+
 
 // Listen for cycle command
 browser.runtime.onMessage.addListener((message) => {
