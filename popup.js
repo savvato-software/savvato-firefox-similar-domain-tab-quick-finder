@@ -13,6 +13,8 @@ function displayTabs(tabs) {
     listOfTabs = tabs.tabs;
 
     const list = document.getElementById('tab-list');
+    list.innerHTML = '';
+
     let lastWindowId = null;
     listOfTabs.forEach((tab, index) => {
         if (lastWindowId !== tab.windowId) {
@@ -129,32 +131,18 @@ function closeTab(index) {
 
 function updateListAfterClose(closedIndex) {
     listOfTabs.splice(closedIndex, 1);  // Remove the closed tab from the list
-    refreshTabListDisplay();  // Refresh the list to remove the closed tab visually
 
     if (listOfTabs.length > 0) {
         // Adjust selectedIndex if necessary
         if (closedIndex >= listOfTabs.length) {
             selectedIndex = listOfTabs.length - 1;  // Select the last tab if the last was closed
+        } else {
+            selectedIndex = closedIndex-1;  // Or maintain the same position
         }
-        selectTab(selectedIndex);  // Select the next or previous tab
+        displayTabs({tabs: listOfTabs});  // Redisplay tabs with the current list
+        selectTab(selectedIndex);  // Ensure the correct tab is selected
     } else {
         console.log("No more tabs left.");
         window.close();  // Close the popup if no tabs left
     }
-}
-
-function refreshTabListDisplay() {
-    const list = document.getElementById('tab-list');
-    list.innerHTML = '';  // Clear existing tab display
-    listOfTabs.forEach((tab, index) => {
-        const item = document.createElement('li');
-        item.textContent = tab.title;
-        item.className = 'tab-item';  // Ensure this class is used for all tab items
-        item.id = 'tab' + index;
-        item.addEventListener('click', () => {
-            selectTab(index);
-            activateTab(index);
-        });
-        list.appendChild(item);
-    });
 }
