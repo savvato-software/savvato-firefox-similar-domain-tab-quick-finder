@@ -29,23 +29,35 @@ function updateTabs() {
   });
 }
 
-// Function to open the popup
 function openPopup() {
-  console.log("Opening popup");
-  const popupURL = browser.extension.getURL('popup.html');
-  const creating = browser.windows.create({
-    url: popupURL,
-    type: "popup",
-    width: 400,
-    height: 600
-  });
-  creating.then(windowInfo => {
-    popupWindowId = windowInfo.id;
-    browser.windows.onRemoved.addListener(() => {
-      popupWindowId = null;
-      isTabsQueried = false; // Reset flag when popup is closed
+  if (!popupWindowId) {
+    browser.windows.getCurrent({populate: true}).then((currentWindow) => {
+      const popupWidth = 400;
+      const popupHeight = 600;
+      const left = currentWindow.left + (currentWindow.width / 2) - (popupWidth / 2);
+      const top = currentWindow.top + (currentWindow.height / 2) - (popupHeight / 2);
+
+      const creating = browser.windows.create({
+        url: browser.extension.getURL('popup.html'),
+        type: "popup",
+        width: popupWidth,
+        height: popupHeight,
+        left: Math.round(left),
+        top: Math.round(top)
+      });
+
+      creating.then(windowInfo => {
+        popupWindowId = windowInfo.id;
+        // Add listener for when the popup is closed
+        browser.windows.onRemoved.addListener((closedWindowId) => {
+          if (closedWindowId === popupWindowId) {
+            popupWindowId = null;
+            isTabsQueried = false;  // Reset the flag when the popup closes
+          }
+        });
+      }, onError);
     });
-  }, onError);
+  }
 }
 
 // Function to send a message to cycle tabs within the popup
