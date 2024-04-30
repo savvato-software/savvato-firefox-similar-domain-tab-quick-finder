@@ -97,3 +97,41 @@ browser.runtime.onMessage.addListener((message) => {
         selectTab(selectedIndex);
     }
 });
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === "Delete") {
+        if (selectedIndex < listOfTabs.length) {
+            console.log("Delete key pressed. Closing tab at index: " + selectedIndex);
+            closeTab(selectedIndex);
+        }
+    }
+});
+
+function closeTab(index) {
+    const tabId = listOfTabs[index].id;
+    browser.tabs.remove(tabId).then(() => {
+        console.log("Tab closed: " + tabId);
+        updateListAfterClose(index);
+    }).catch(onError);
+}
+
+function updateListAfterClose(closedIndex) {
+    listOfTabs.splice(closedIndex, 1);  // Remove the closed tab from the list
+    if (listOfTabs.length > 0) {
+        if (closedIndex >= listOfTabs.length) {  // If it was the last tab, select the new last tab
+            selectTab(listOfTabs.length - 1);
+        } else {
+            selectTab(closedIndex);  // Otherwise, select the tab that now occupies the closed tab's index
+        }
+    } else {
+        console.log("No more tabs left.");
+        window.close();  // Close the popup if no tabs left
+    }
+    refreshTabListDisplay();
+}
+
+function refreshTabListDisplay() {
+    const list = document.getElementById('tab-list');
+    list.innerHTML = '';  // Clear existing tab display
+    displayTabs({tabs: listOfTabs});  // Redisplay tabs
+}
