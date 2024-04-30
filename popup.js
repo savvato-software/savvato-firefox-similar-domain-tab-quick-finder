@@ -109,29 +109,48 @@ document.addEventListener('keydown', (event) => {
 
 function closeTab(index) {
     const tabId = listOfTabs[index].id;
-    browser.tabs.remove(tabId).then(() => {
-        console.log("Tab closed: " + tabId);
-        updateListAfterClose(index);
-    }).catch(onError);
+    const item = document.getElementById('tab' + index);
+
+    // Apply fade-out animation
+    item.classList.add('fade-out');
+
+    // Wait for the animation to finish before closing the tab and updating the list
+    setTimeout(() => {
+        browser.tabs.remove(tabId).then(() => {
+            console.log("Tab closed: " + tabId);
+            updateListAfterClose(index);
+        }).catch(onError);
+    }, 300); // Corresponds to the duration of the animation
 }
 
 function updateListAfterClose(closedIndex) {
     listOfTabs.splice(closedIndex, 1);  // Remove the closed tab from the list
+    refreshTabListDisplay();  // Refresh the list to remove the closed tab visually
+
     if (listOfTabs.length > 0) {
-        if (closedIndex >= listOfTabs.length) {  // If it was the last tab, select the new last tab
-            selectTab(listOfTabs.length - 1);
-        } else {
-            selectTab(closedIndex);  // Otherwise, select the tab that now occupies the closed tab's index
+        // Adjust selectedIndex if necessary
+        if (closedIndex >= listOfTabs.length) {
+            selectedIndex = listOfTabs.length - 1;  // Select the last tab if the last was closed
         }
+        selectTab(selectedIndex);  // Select the next or previous tab
     } else {
         console.log("No more tabs left.");
         window.close();  // Close the popup if no tabs left
     }
-    refreshTabListDisplay();
 }
 
 function refreshTabListDisplay() {
     const list = document.getElementById('tab-list');
     list.innerHTML = '';  // Clear existing tab display
-    displayTabs({tabs: listOfTabs});  // Redisplay tabs
+    listOfTabs.forEach((tab, index) => {
+        const item = document.createElement('li');
+        item.textContent = tab.title;
+        item.className = 'tab-item';  // Ensure this class is used for all tab items
+        item.id = 'tab' + index;
+        item.addEventListener('click', () => {
+            selectTab(index);
+            activateTab(index);
+        });
+        list.appendChild(item);
+    });
 }
