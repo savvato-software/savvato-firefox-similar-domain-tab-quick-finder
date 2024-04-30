@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Domain Tab Cycler",
+  "version": "1.0",
+  "permissions": [
+    "tabs", "activeTab"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "commands": {
+    "cycle-domain-tabs": {
+      "suggested_key": {
+        "default": "Alt+Shift+Y"
+      },
+      "description": "Activate domain tab cycler"
+    }
+  }
+}
